@@ -5,16 +5,17 @@ const cors = require('cors');
 
 const app = express();
 
-require('dotenv').config()
 
 const port = process.env.PORT || 5000;
+require('dotenv').config()
+
 
 
 // middle wiew 
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.10dvn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://clothShop:ihaeejFczbIcycjK@cluster0.10dvn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 console.log(uri)
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -24,6 +25,15 @@ async function run() {
         await client.connect();
         const database = client.db("clothShop");
         const productCollection = database.collection("products");
+
+        // get products
+
+        app.get('/product', async (req, res) => {
+            const cursor = productCollection.find({});
+            const products = await cursor.toArray();
+            res.send(products);
+        })
+
 
         // Post Products
         app.post('/product', async (req, res) => {
@@ -39,7 +49,7 @@ async function run() {
 
 
     } finally {
-        await client.close();
+        // await client.close();
     }
 }
 run().catch(console.dir);
